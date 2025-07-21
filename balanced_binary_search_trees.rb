@@ -71,13 +71,16 @@ class Tree
     end
   end
 
-  def level_order(node = @root, &block)
+  def level_order(node = @root, queue = [], &block)
     arr = [node.data]
-    arr += [node.left.data] unless node.left.nil?
-    arr += [node.right.data] unless node.right.nil?
-    arr
-    # traverse the tree in breadth first level order and yield each node to the provided block
-    # return an array of values if block == nil
+    queue.push(node.left) unless node.left.nil?
+    queue.push(node.right) unless node.right.nil?
+    arr += level_order(queue[0], queue[1..]) unless queue.empty?
+    if block_given?
+      arr.each(&block)
+    else
+      arr
+    end
   end
 
   def inorder(node = @root, &block)
@@ -155,5 +158,5 @@ example_tree = Tree.new(example_arr)
 
 example_tree.pretty_print
 # pp(example_tree.preorder { |x| p(x * 2) })
-pp example_tree.level_order
+pp (example_tree.level_order  { |x| p(x * 2) })
 # example_tree.pretty_print
